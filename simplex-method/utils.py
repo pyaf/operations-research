@@ -13,16 +13,17 @@ def evaluate_obj_fn(c, vars):
 def calculate_b_a_ratios(a, b, c, s):
     b_a_ratios = []
     for i in range(a.shape[0]):
-        ratio = b[i, 0] / a[i, s] if a[i, s] > 0 else "inf"
+        ratio = b[i, 0] / a[i, s] if a[i, s] > 0 else 0
         b_a_ratios.append(ratio)
-    ratio = b[i + 1, 0] / c[s, 0] if c[s, 0] > 0 else "inf"
+    ratio = b[i + 1, 0] / c[s, 0] if c[s, 0] > 0 else 0
     b_a_ratios.append(ratio)
-    return b_a_ratios
+    return np.array(b_a_ratios, dtype='float')
 
 
 def print_table(a, b, c, s, basis, vars):
     """Beautifully prints table"""
     try:
+        # pdb.set_trace()
         b_a_ratios = calculate_b_a_ratios(a, b, c, s)
         table = BeautifulTable()
         header = ["x" + str(i) for i in range(1, a.shape[1] + 1)]
@@ -33,18 +34,19 @@ def print_table(a, b, c, s, basis, vars):
             for j in range(a.shape[1]):
                 row.append(a[i, j])
             _f = evaluate_obj_fn(c, vars)
-            ratio = '' if b_a_ratios[i] == 'inf' else b_a_ratios[i]  # ignore inf values
+            ratio = '' if b_a_ratios[i] <= 0 else b_a_ratios[i]
             row.extend([_f, b[i, 0], ratio])
             table.append_row(row)
         row = ["-f"]
         for j in range(c.shape[0]):
             row.append(c[j, 0])
-        ratio = '' if b_a_ratios[-1] == 'inf' else b_a_ratios[i]  # ignore inf values
+        ratio = '' if b_a_ratios[-1] <= 0 else b_a_ratios[-1]
         row.extend([1, b[i + 1, 0], ratio])
         table.append_row(row)
         print(table)
-        pivot_index = np.argmin(b_a_ratios)
-        return pivot_index
+        b_a_ratios[b_a_ratios <= 0] = 'inf'
+        r = np.argmin(b_a_ratios)
+        return r
     except:
         traceback.print_exc()
         pdb.set_trace()

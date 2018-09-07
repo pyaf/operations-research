@@ -52,16 +52,18 @@ while True:
     a, b, c = canonicalize(a, b, c, r, s)
     # evaluate variables
     vars = update_vars(a, b, vars, basis)
+    s = np.argmin(c)  # idx of min cost coefficient
     r = print_table(a, b, c, s, basis, vars) # the idx min b/a value
+
     if np.min(c) >= 0:  # all cost coefficients are positive
         print("\n" + "*" * 10 + "Optimal solution reached." + "*" * 10 + "\n")
         print_vars(vars)
         exit()
+
     if np.min(np.amax(a, axis=0)) <= 0:  # if any column is all negative
         print("\n" + "*" * 10 + "Solution out of bounds." + "*" * 10 + "\n")
         exit()
 
     print("Solution for this iteration:")
     print_vars(vars)
-    s = np.argmin(c)  # idx of min cost coefficient
     i += 1
