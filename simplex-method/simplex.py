@@ -61,8 +61,7 @@ while True:
     for var in vars:
         if var not in basis:  # non basic variable
             if c[int(var[-1]) - 1] == 0:
-                print("Cost coeff corresponding to " + var + " is zero, \
-                     which is a non basic variable.")
+                print("Cost coeff corresponding to a non basic variable: " + var + " is zero.")
                 final_print("Infinite Solutions possible")
                 exit()
 
