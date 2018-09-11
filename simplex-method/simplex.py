@@ -1,7 +1,8 @@
 import numpy as np
 import pdb
 from data import data
-from utils import print_table, print_vars, canonicalize, update_basis, update_vars
+from utils import print_table, print_vars, canonicalize, \
+    update_basis, update_vars, final_print
 
 a = np.asarray(data["a"], dtype="float")  # contraint coefficients
 b = np.asarray(data["b"], dtype="float")  # value of constraints
@@ -19,7 +20,6 @@ for i in range(1, n + 1):
 basis = []
 for i in range(n - n_slack_vars + 1, n + 1):
     basis.append("x" + str(i))
-
 
 # initial feasible basic solution
 # slack variables are basic variables
@@ -42,6 +42,7 @@ s = np.argmin(c)  # idx of min cost coefficient
 r = print_table(a, b, c, s, basis, vars)  # the idx min b/a value
 
 i = 1
+
 while True:
     input()
     print("\nIteration number : %d" % i)
@@ -53,15 +54,25 @@ while True:
     # evaluate variables
     vars = update_vars(a, b, vars, basis)
     s = np.argmin(c)  # idx of min cost coefficient
-    r = print_table(a, b, c, s, basis, vars) # the idx min b/a value
+    r = print_table(a, b, c, s, basis, vars)  # the idx min b/a value
+
+    # check if any non basic variable's cost coeff has become zero
+    # if yes, then infinite solutions are possible
+    for var in vars:
+        if var not in basis:  # non basic variable
+            if c[int(var[-1]) - 1] == 0:
+                print("Cost coeff corresponding to " + var + " is zero, \
+                     which is a non basic variable.")
+                final_print("Infinite Solutions possible")
+                exit()
 
     if np.min(c) >= 0:  # all cost coefficients are positive
-        print("\n" + "*" * 10 + "Optimal solution reached." + "*" * 10 + "\n")
+        final_print("Optimal solution reached.")
         print_vars(vars)
         exit()
 
     if np.min(np.amax(a, axis=0)) <= 0:  # if any column is all negative
-        print("\n" + "*" * 10 + "Solution out of bounds." + "*" * 10 + "\n")
+        final_print("Solution out of bounds.")
         exit()
 
     print("Solution for this iteration:")

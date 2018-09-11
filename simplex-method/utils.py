@@ -63,9 +63,9 @@ def print_vars(vars):
 def canonicalize(a, b, c, x, y):
     # x, y = pivot coordinates
     # modifying b before a is v. imp.
-    b[x, 0] /= a[x, y]
-    a[x, :] /= a[x, y]  # coeff of pivot element
-    c = c.T  # 6, 1 => 1, 6
+    b[x, 0] /= a[x, y]  # divide by coeff of pivot element
+    a[x, :] /= a[x, y]  # divide by coeff of pivot element
+    c = c.T  # 6, 1 => 1, 6; required
     for i in range(a.shape[0]):
         if i == x:
             continue
@@ -95,3 +95,7 @@ def update_basis(a, basis, pivot_idx, s):
             basis[i] = "x" + str(s + 1)
             break
     return basis
+
+
+def final_print(text):
+    print("\n" + "*" * 10 + " " + text + " " + "*" * 10)
